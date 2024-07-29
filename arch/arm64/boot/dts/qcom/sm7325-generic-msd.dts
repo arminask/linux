@@ -1,0 +1,104 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) 2022, Xilin Wu <strongtz@yeah.net>
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+
+#include "sm7325.dtsi"
+
+/delete-node/ &video_mem;
+/delete-node/ &rmtfs_mem;
+
+/ {
+	model = "Snapdragon 778G Generic";
+	compatible = "qcom,sm7325", "qcom,sc7280";
+	chassis-type = "handset";
+	
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		mpss_mem: memory@8b800000 {
+			reg = <0x0 0x8b800000 0x0 0xf600000>;
+			no-map;
+		};
+
+		video_mem: memory@8ad00000 {
+			reg = <0x0 0x8ad00000 0x0 0x500000>;
+			no-map;
+		};
+
+		wpss_mem: memory@9ae00000 {
+			reg = <0x0 0x9ae00000 0x0 0x1900000>;
+			no-map;
+		};
+
+		ramoops@B0000000 {
+			compatible = "ramoops";
+			reg = <0x0 0xb0000000 0x0 0x400000>;
+			record-size = <0>;
+			console-size = <0x200000>;
+			ftrace-size = <0>;
+			pmsg-size = <0x200000>;
+		};
+
+		framebuffer_region@E1000000 {
+			reg = <0x0 0xE1000000 0x0 0x02400000>;
+			no-map;
+		};
+
+		rmtfs_mem: memory@e8e00000 {
+			compatible = "qcom,rmtfs-mem";
+			reg = <0x0 0xe8e00000 0x0 0x280000>;
+			no-map;
+
+			qcom,client-id = <1>;
+			qcom,vmid = <15>;
+		};
+	};
+
+	chosen {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		framebuffer@9c000000 {
+			compatible = "simple-framebuffer";
+			reg = <0x0 0xE1000000 0x0 (1080 * 2400 * 4)>;
+			width = <1080>;
+			height = <2248>;
+			stride = <(1080 * 4)>;
+			format = "a8r8g8b8";
+		};
+	};
+};
+
+&tlmm {
+    // Reserve all
+	gpio-reserved-ranges = <0 174>;
+};
+
+&usb_1 {
+	status = "okay";
+};
+
+&usb_1_dwc3 {
+	dr_mode = "peripheral";
+};
+
+&usb_1_hsphy {
+	status = "okay";
+	// vdd-supply = <&vreg_l4a>;
+	// vdda-pll-supply = <&vreg_l11a>;
+	// vdda-phy-dpdm-supply = <&vreg_l17a>;
+};
+
+&usb_1_qmpphy {
+	status = "okay";
+	// vdda-phy-supply = <&vreg_l4a>;
+	// vdda-pll-supply = <&vreg_l3c>;
+};
