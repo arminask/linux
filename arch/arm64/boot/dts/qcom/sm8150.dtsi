@@ -14,7 +14,6 @@
 #include <dt-bindings/clock/qcom,dispcc-sm8150.h>
 #include <dt-bindings/clock/qcom,gcc-sm8150.h>
 #include <dt-bindings/clock/qcom,gpucc-sm8150.h>
-#include <dt-bindings/clock/qcom,videocc-sm8150.h>
 #include <dt-bindings/interconnect/qcom,osm-l3.h>
 #include <dt-bindings/interconnect/qcom,sm8150.h>
 #include <dt-bindings/thermal/thermal.h>
@@ -1691,6 +1690,17 @@
 				status = "disabled";
 			};
 
+			uart13: serial@c8c000 {
+				compatible = "qcom,geni-uart";
+				reg = <0 0x00c8c000 0 0x4000>;
+				clock-names = "se";
+				clocks = <&gcc GCC_QUPV3_WRAP2_S3_CLK>;
+				pinctrl-names = "default";
+				pinctrl-0 = <&qup_uart13_default>;
+				interrupts = <GIC_SPI 585 IRQ_TYPE_LEVEL_HIGH>;
+				status = "disabled";
+			};
+
 			i2c14: i2c@c90000 {
 				compatible = "qcom,geni-i2c";
 				reg = <0 0x00c90000 0 0x4000>;
@@ -2593,6 +2603,13 @@
 				pins = "gpio43", "gpio44", "gpio45", "gpio46";
 				function = "qup13";
 				drive-strength = <6>;
+				bias-disable;
+			};
+
+			qup_uart13_default: qup-uart13-default-state {
+				pins = "gpio43", "gpio44", "gpio45", "gpio46";
+				function = "qup13";
+				drive-strength = <2>;
 				bias-disable;
 			};
 
@@ -3508,7 +3525,6 @@
 					reg = <1>;
 
 					usb_1_qmpphy_usb_ss_in: endpoint {
-						remote-endpoint = <&usb_1_dwc3_ss>;
 					};
 				};
 
@@ -3516,7 +3532,6 @@
 					reg = <2>;
 
 					usb_1_qmpphy_dp_in: endpoint {
-						remote-endpoint = <&mdss_dp_out>;
 					};
 				};
 			};
@@ -3675,7 +3690,6 @@
 						reg = <1>;
 
 						usb_1_dwc3_ss: endpoint {
-							remote-endpoint = <&usb_1_qmpphy_usb_ss_in>;
 						};
 					};
 				};
@@ -3737,19 +3751,6 @@
 				phys = <&usb_2_hsphy>, <&usb_2_qmpphy>;
 				phy-names = "usb2-phy", "usb3-phy";
 			};
-		};
-
-		videocc: clock-controller@ab00000 {
-			compatible = "qcom,sm8150-videocc";
-			reg = <0 0x0ab00000 0 0x10000>;
-			clocks = <&gcc GCC_VIDEO_AHB_CLK>,
-				 <&rpmhcc RPMH_CXO_CLK>;
-			clock-names = "iface", "bi_tcxo";
-			power-domains = <&rpmhpd SM8150_MMCX>;
-			required-opps = <&rpmhpd_opp_low_svs>;
-			#clock-cells = <1>;
-			#reset-cells = <1>;
-			#power-domain-cells = <1>;
 		};
 
 		camnoc_virt: interconnect@ac00000 {
@@ -3911,7 +3912,6 @@
 						reg = <1>;
 
 						mdss_dp_out: endpoint {
-							remote-endpoint = <&usb_1_qmpphy_dp_in>;
 						};
 					};
 				};
@@ -4595,6 +4595,7 @@
 	thermal-zones {
 		cpu0-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 1>;
 
@@ -4638,6 +4639,7 @@
 
 		cpu1-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 2>;
 
@@ -4681,6 +4683,7 @@
 
 		cpu2-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 3>;
 
@@ -4724,6 +4727,7 @@
 
 		cpu3-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 4>;
 
@@ -4767,6 +4771,7 @@
 
 		cpu4-top-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 7>;
 
@@ -4810,6 +4815,7 @@
 
 		cpu5-top-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 8>;
 
@@ -4853,6 +4859,7 @@
 
 		cpu6-top-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 9>;
 
@@ -4896,6 +4903,7 @@
 
 		cpu7-top-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 10>;
 
@@ -4939,6 +4947,7 @@
 
 		cpu4-bottom-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 11>;
 
@@ -4982,6 +4991,7 @@
 
 		cpu5-bottom-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 12>;
 
@@ -5025,6 +5035,7 @@
 
 		cpu6-bottom-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 13>;
 
@@ -5068,6 +5079,7 @@
 
 		cpu7-bottom-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 14>;
 
@@ -5111,6 +5123,7 @@
 
 		aoss0-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 0>;
 
@@ -5125,6 +5138,7 @@
 
 		cluster0-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 5>;
 
@@ -5144,6 +5158,7 @@
 
 		cluster1-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 6>;
 
@@ -5163,6 +5178,7 @@
 
 		gpu-top-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens0 15>;
 
@@ -5175,27 +5191,16 @@
 
 			trips {
 				gpu_top_alert0: trip-point0 {
-					temperature = <85000>;
-					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				trip-point1 {
 					temperature = <90000>;
-					hysteresis = <1000>;
+					hysteresis = <2000>;
 					type = "hot";
-				};
-
-				trip-point2 {
-					temperature = <110000>;
-					hysteresis = <1000>;
-					type = "critical";
 				};
 			};
 		};
 
 		aoss1-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 0>;
 
@@ -5210,6 +5215,7 @@
 
 		wlan-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 1>;
 
@@ -5224,6 +5230,7 @@
 
 		video-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 2>;
 
@@ -5238,6 +5245,7 @@
 
 		mem-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 3>;
 
@@ -5252,6 +5260,7 @@
 
 		q6-hvx-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 4>;
 
@@ -5266,6 +5275,7 @@
 
 		camera-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 5>;
 
@@ -5280,6 +5290,7 @@
 
 		compute-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 6>;
 
@@ -5294,6 +5305,7 @@
 
 		modem-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 7>;
 
@@ -5308,6 +5320,7 @@
 
 		npu-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 8>;
 
@@ -5322,6 +5335,7 @@
 
 		modem-vec-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 9>;
 
@@ -5336,6 +5350,7 @@
 
 		modem-scl-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 10>;
 
@@ -5350,6 +5365,7 @@
 
 		gpu-bottom-thermal {
 			polling-delay-passive = <250>;
+			polling-delay = <1000>;
 
 			thermal-sensors = <&tsens1 11>;
 
@@ -5362,21 +5378,9 @@
 
 			trips {
 				gpu_bottom_alert0: trip-point0 {
-					temperature = <85000>;
-					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				trip-point1 {
 					temperature = <90000>;
-					hysteresis = <1000>;
+					hysteresis = <2000>;
 					type = "hot";
-				};
-
-				trip-point2 {
-					temperature = <110000>;
-					hysteresis = <1000>;
-					type = "critical";
 				};
 			};
 		};
